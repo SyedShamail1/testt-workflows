@@ -12,12 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get list of added files
+      - name: Get the list of added files using GitHub API
         id: added_files
-        uses: tj-actions/changed-files@v3
-        with:
-          compared-to: ${{ github.event.before }}
-          filter: A
+        run: |
+          PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
+          URL="https://api.github.com/repos/${{ github.repository }}/compare/$PREVIOUS_SHA...${{ github.sha }}"
+          ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
+          echo "::set-output name=files::$ADDED_FILES"
 
       - name: Check for new file additions
         run: |
