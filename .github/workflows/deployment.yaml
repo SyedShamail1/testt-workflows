@@ -15,7 +15,7 @@ jobs:
       - name: Get list of added files
         id: added_files
         run: |
-          ADDED_FILES=$(git diff --name-only --diff-filter=A HEAD^..HEAD)
+          ADDED_FILES=$(git diff --name-only --diff-filter=A HEAD~1..HEAD)
           echo "::set-output name=files::$ADDED_FILES"
 
       - name: Check for new file additions
