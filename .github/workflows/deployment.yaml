@@ -12,26 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get the commit information for the previous commit
-        id: previous_commit
-        run: |
-          PREVIOUS_COMMIT_SHA=$(git log -1 --pretty=format:"%P")
-          IFS=' ' read -ra SPLIT_COMMITS <<< "$PREVIOUS_COMMIT_SHA"
-          PREVIOUS_COMMIT="${SPLIT_COMMITS[0]}"
-          echo "::set-output name=prev_commit::$PREVIOUS_COMMIT"
-
       - name: Get list of added files
         id: added_files
-        run: |
-          PREVIOUS_COMMIT="${{ steps.previous_commit.outputs.prev_commit }}"
-          ADDED_FILES=$(git diff --name-only --diff-filter=A $PREVIOUS_COMMIT..HEAD)
-          echo "::set-output name=files::$ADDED_FILES"
+        uses: tj-actions/changed-files@v3
+        with:
+          compared-to: ${{ github.event.before }}
+          filter: A
 
       - name: Check for new file additions
         run: |
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
-          IFS=$'\n' read -rd '' -a FILES_ARRAY <<< "$ADDED_FILES"
-          for FILE in "${FILES_ARRAY[@]}"; do
+          for FILE in $ADDED_FILES; do
             echo "New file added: $FILE"
             # Here you can add more actions or commands you want to perform for each new file added.
           done
