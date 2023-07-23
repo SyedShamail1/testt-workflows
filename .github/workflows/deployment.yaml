@@ -12,15 +12,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get the commit SHA for the previous commit
+      - name: Get the commit information for the previous commit
+        id: previous_commit
         run: |
-          PREVIOUS_COMMIT=$(git rev-parse HEAD^)
+          PREVIOUS_COMMIT_SHA=$(git log -1 --pretty=format:"%P")
+          IFS=' ' read -ra SPLIT_COMMITS <<< "$PREVIOUS_COMMIT_SHA"
+          PREVIOUS_COMMIT="${SPLIT_COMMITS[0]}"
           echo "::set-output name=prev_commit::$PREVIOUS_COMMIT"
 
       - name: Get list of added files
         id: added_files
         run: |
-          PREVIOUS_COMMIT="${{ steps.get_commit.outputs.prev_commit }}"
+          PREVIOUS_COMMIT="${{ steps.previous_commit.outputs.prev_commit }}"
           ADDED_FILES=$(git diff --name-only --diff-filter=A $PREVIOUS_COMMIT..HEAD)
           echo "::set-output name=files::$ADDED_FILES"
 
