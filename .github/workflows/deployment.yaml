@@ -27,7 +27,7 @@ jobs:
           ADDED_FILES=$(git diff --name-only --diff-filter=A $PREVIOUS_COMMIT..HEAD)
           echo "::set-output name=files::$ADDED_FILES"
 
-       - name: Check for new file additions
+      - name: Check for new file additions
         run: |
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
           IFS=$'\n' read -rd '' -a FILES_ARRAY <<< "$ADDED_FILES"
