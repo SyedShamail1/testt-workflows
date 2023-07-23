@@ -27,10 +27,11 @@ jobs:
           ADDED_FILES=$(git diff --name-only --diff-filter=A $PREVIOUS_COMMIT..HEAD)
           echo "::set-output name=files::$ADDED_FILES"
 
-      - name: Check for new file additions
+       - name: Check for new file additions
         run: |
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
-          for FILE in $ADDED_FILES; do
+          IFS=$'\n' read -rd '' -a FILES_ARRAY <<< "$ADDED_FILES"
+          for FILE in "${FILES_ARRAY[@]}"; do
             echo "New file added: $FILE"
             # Here you can add more actions or commands you want to perform for each new file added.
           done
