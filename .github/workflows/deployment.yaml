@@ -12,10 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Get the commit SHA for the previous commit
+        run: |
+          PREVIOUS_COMMIT=$(git rev-parse HEAD^)
+          echo "::set-output name=prev_commit::$PREVIOUS_COMMIT"
+
       - name: Get list of added files
         id: added_files
         run: |
-          ADDED_FILES=$(git diff --name-only --diff-filter=A HEAD~1..HEAD)
+          PREVIOUS_COMMIT="${{ steps.get_commit.outputs.prev_commit }}"
+          ADDED_FILES=$(git diff --name-only --diff-filter=A $PREVIOUS_COMMIT..HEAD)
           echo "::set-output name=files::$ADDED_FILES"
 
       - name: Check for new file additions
