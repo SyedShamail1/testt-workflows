@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main # Replace with your desired branch name
-    paths-ignore:
-      - "**" # Ignore changes to existing files
 
 jobs:
   check_new_file:
