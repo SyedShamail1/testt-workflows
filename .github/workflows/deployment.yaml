@@ -1,0 +1,29 @@
+name: Check New File Addition
+on:
+  push:
+    branches:
+      - main # Replace with your desired branch name
+    paths-ignore:
+      - "**" # Ignore changes to existing files
+
+jobs:
+  check_new_file:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get list of added files
+        id: added_files
+        run: |
+          ADDED_FILES=$(git diff --name-only --diff-filter=A HEAD^..HEAD)
+          echo "::set-output name=files::$ADDED_FILES"
+
+      - name: Check for new file additions
+        run: |
+          ADDED_FILES="${{ steps.added_files.outputs.files }}"
+          for FILE in $ADDED_FILES; do
+            echo "New file added: $FILE"
+            # Here you can add more actions or commands you want to perform for each new file added.
+          done
