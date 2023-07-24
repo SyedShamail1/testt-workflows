@@ -23,6 +23,7 @@ jobs:
       - name: Check for new file additions
         run: |
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
+          IFS=$'\n' # Set the Internal Field Separator to newline to handle spaces in file names
           for FILE in $ADDED_FILES; do
             FILE_path=$(realpath "$GITHUB_WORKSPACE/$FILE")
             echo "New file added: $FILE"
