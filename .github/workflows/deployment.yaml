@@ -23,7 +23,7 @@ jobs:
       - name: Get newly added files
         id: get_files
         run: |
-          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} >> files.txt
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} >> files.txt
           echo "::set-output name=files::$(cat files.txt)"
 
       - name: Check for new file additions
