@@ -25,5 +25,6 @@ jobs:
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
           for FILE in $ADDED_FILES; do
             echo "New file added: $FILE"
+            echo "New file path: $FILE_path"
             # Here you can add more actions or commands you want to perform for each new file added.
           done
