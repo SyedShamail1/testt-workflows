@@ -25,7 +25,8 @@ jobs:
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
           IFS=$'\n' # Set the Internal Field Separator to newline to handle spaces in file names
           for FILE in $ADDED_FILES; do
-            FILE_path=$(realpath --relative-to="${GITHUB_WORKSPACE}" "$GITHUB_WORKSPACE/$FILE")
+            # FILE_path=$(realpath "$FILE")
+            FILE_path="$PWD/$FILE"
             echo "New file added: $FILE"
             echo "New file path: $FILE_path"
             # Here you can add more actions or commands you want to perform for each new file added.
