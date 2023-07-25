@@ -22,7 +22,6 @@ jobs:
 
       - name: Check for new file additions
         run: |
-          # Get the repository owner and name from github.repository
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
           IFS=$'\n' # Set the Internal Field Separator to newline to handle spaces in file names
           for FILE in $ADDED_FILES; do
