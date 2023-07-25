@@ -27,6 +27,10 @@ jobs:
           for FILE in $ADDED_FILES; do
             # FILE_path=$(realpath "$FILE")
             FILE_path="$PWD/$FILE"
+            # Construct the raw file URL
+            DOWNLOADABLE_LINK="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/${{ github.sha }}/$FILE_PATH"
+
+            echo "Downloadable Link: $DOWNLOADABLE_LINK"
             echo "New file added: $FILE"
             echo "New file path: $FILE_path"
             # Here you can add more actions or commands you want to perform for each new file added.
