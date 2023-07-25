@@ -31,7 +31,7 @@ jobs:
             # FILE_path=$(realpath "$FILE")
             FILE_path="$PWD/$FILE"
             # Construct the raw file URL
-            DOWNLOADABLE_LINK="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/${{ github.sha }}/$FILE_PATH"
+            DOWNLOADABLE_LINK="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/${{ github.sha }}/$FILE_path"
 
             echo "Downloadable Link: $DOWNLOADABLE_LINK"
             echo "New file added: $FILE"
