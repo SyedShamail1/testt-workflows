@@ -53,7 +53,7 @@ jobs:
         run: |
           PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
           URL="https://api.github.com/repos/SyedShamail1/Repo-B/compare/${{ env.PREV_COMMIT_SHA }}...${{ env.CURRENT_COMMIT_SHA }}"
-          ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
+          ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
           echo "::set-output name=files::$ADDED_FILES"
 
       # (Optional) Construct GitHub downloadable links for the newly added files
