@@ -15,14 +15,18 @@ jobs:
       - name: Get newly added files
         id: get_files
         run: |
-          # Get the list of changed files between current and previous commits
-          CHANGED_FILES=$(git diff --name-only HEAD^)
+          # # Get the list of changed files between current and previous commits
+          # CHANGED_FILES=$(git diff --name-only HEAD^)
 
-          # Filter and keep only newly added files (added but not deleted or renamed)
-          NEW_FILES=$(echo "$CHANGED_FILES" | grep -E '^content/' | grep -v '=>')
+          # # Filter and keep only newly added files (added but not deleted or renamed)
+          # NEW_FILES=$(echo "$CHANGED_FILES" | grep -E '^content/' | grep -v '=>')
 
-          # Output the list of newly added file paths
-          echo "$NEW_FILES" > newly_added_files.txt
+          # # Output the list of newly added file paths
+          # echo "$NEW_FILES" > newly_added_files.txt
+          PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
+          URL="https://api.github.com/repos/${{ github.repository }}/compare/$PREVIOUS_SHA...${{ github.sha }}"
+          ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
+          echo "::set-output name=files::$ADDED_FILES"
 
       - name: Show newly added files
         run: |
