@@ -9,40 +9,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Fetch previous commit SHA from event payload
-      #   id: fetch_prev_commit
-      #   run: |
-      #     echo "client payload" ${{ github.event.client_payload.before }}
-      #     echo "::set-output name=prev_commit::${{ github.event.client_payload.before }}"
-
-      # - name: Fetch current commit SHA from event payload
-      #   id: fetch_curr_commit
-      #   run: echo "::set-output name=curr_commit::${{ github.event.client_payload.after }}"
-
-      # - name: Checkout source code
-      #   uses: actions/checkout@v2
-
-      # - name: Get changed files
-      #   id: get_changed_files
-      #   run: |
-      #     PREV_COMMIT_SHA=${{ steps.fetch_prev_commit.outputs.prev_commit }}
-      #     CURRENT_COMMIT_SHA=${{ steps.fetch_curr_commit.outputs.curr_commit }}
-      #     CHANGED_FILES=$(git diff --name-only "${PREV_COMMIT_SHA}" "${CURRENT_COMMIT_SHA}")
-      #     echo "${CHANGED_FILES}" > changed_files.txt
-      - name: List added files in repository B
-        env:
-          REPO_B_TOKEN: ${{ secrets.REPO_A_PAT }} # Retrieve the token from the secrets
-          REPO_B_OWNER: "SyedShamail1"
-          REPO_B_NAME: "repo-B"
+      - name: Fetch previous commit SHA from event payload
+        id: fetch_prev_commit
         run: |
-          # Fetch the commit SHA of the latest push in repository A
-          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "client payload" ${{ steps.get_prev_commit.outputs.prev_commit }}
+          echo "::set-output name=prev_commit::${{ github.event.client_payload.before }}"
 
-          # Fetch the list of changed files in repository B using GitHub API
-          curl -H "Authorization: token $REPO_B_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              -s "https://api.github.com/repos/$REPO_B_OWNER/$REPO_B_NAME/commits/$COMMIT_SHA" | jq '.files[] | select(.status == "added") | .filename'
-          
+      - name: Fetch current commit SHA from event payload
+        id: fetch_curr_commit
+        run: echo "::set-output name=curr_commit::${{ github.event.client_payload.after }}"
+
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Get changed files
+        id: get_changed_files
+        run: |
+          PREV_COMMIT_SHA=${{ steps.fetch_prev_commit.outputs.prev_commit }}
+          CURRENT_COMMIT_SHA=${{ steps.fetch_curr_commit.outputs.curr_commit }}
+          CHANGED_FILES=$(git diff --name-only "${PREV_COMMIT_SHA}" "${CURRENT_COMMIT_SHA}")
+          echo "${CHANGED_FILES}" > changed_files.txt
+
       - name: Show newly added files
         run: |
           cat newly_added_files.txt
