@@ -52,7 +52,7 @@ jobs:
         id: added_files
         run: |
           PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
-          URL="https://api.github.com/repos/${{ github.repository }}/compare/$CURRENT_COMMIT_SHA...${{ CURRENT_COMMIT_SHA }}"
+          URL="https://api.github.com/repos/${{ github.repository }}/compare/$ {{ CURRENT_COMMIT_SHA }}...${{ CURRENT_COMMIT_SHA }}"
           ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
           echo "::set-output name=files::$ADDED_FILES"
 
