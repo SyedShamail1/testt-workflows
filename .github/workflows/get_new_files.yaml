@@ -12,22 +12,22 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Get newly added files
-        id: get_files
+      - name: Fetch previous commit SHA
+        id: fetch_prev_commit
+        run: echo "::set-output name=prev_commit::$(git rev-parse HEAD^)"
+
+      - name: Fetch current commit SHA
+        id: fetch_curr_commit
+        run: echo "::set-output name=curr_commit::$(git rev-parse HEAD)"
+
+      - name: Get changed files
+        id: get_changed_files
         run: |
-          # # Get the list of changed files between current and previous commits
-          # CHANGED_FILES=$(git diff --name-only HEAD^)
-
-          # # Filter and keep only newly added files (added but not deleted or renamed)
-          # NEW_FILES=$(echo "$CHANGED_FILES" | grep -E '^content/' | grep -v '=>')
-
-          # # Output the list of newly added file paths
-          # echo "$NEW_FILES" > newly_added_files.txt
-          PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
-          URL="https://api.github.com/repos/${{ github.repository }}/compare/$PREVIOUS_SHA...${{ github.sha }}"
-          ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
-          echo "::set-output name=files::$ADDED_FILES"
-
+          PREV_COMMIT_SHA=${{ steps.fetch_prev_commit.outputs.prev_commit }}
+          CURRENT_COMMIT_SHA=${{ steps.fetch_curr_commit.outputs.curr_commit }}
+          CHANGED_FILES=$(git diff --name-only "${PREV_COMMIT_SHA}" "${CURRENT_COMMIT_SHA}")
+          echo "${CHANGED_FILES}" > changed_files.txt
+          
       - name: Show newly added files
         run: |
           cat newly_added_files.txt
