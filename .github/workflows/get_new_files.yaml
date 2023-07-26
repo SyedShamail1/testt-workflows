@@ -38,7 +38,7 @@ jobs:
         id: fetch_commit_shas
         run: |
           PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
-            "https://api.github.com/repos/RepoBOwner/RepoBName/actions/workflows/trigger-workflow.yaml/runs?event=push&branch=main&status=completed" \
+            "https://api.github.com/repos/SyedShamail1/Repo-B/actions/workflows/trigger-workflow.yaml/runs?event=push&branch=main&status=completed" \
             | jq -r '.workflow_runs[0].head_sha')
           CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
             "https://api.github.com/repos/SyedShamail1/Repo-B/actions/workflows/trigger-workflow.yaml/runs?event=push&branch=main&status=completed" \
@@ -48,9 +48,13 @@ jobs:
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" 
           echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" 
 
-      - name: Show newly added files
+      - name: Get the list of added files using GitHub API
+        id: added_files
         run: |
-          cat newly_added_files.txt
+          PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
+          URL="https://api.github.com/repos/${{ github.repository }}/compare/$CURRENT_COMMIT_SHA...${{ CURRENT_COMMIT_SHA }}"
+          ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
+          echo "::set-output name=files::$ADDED_FILES"
 
       # (Optional) Construct GitHub downloadable links for the newly added files
       - name: Construct downloadable links
