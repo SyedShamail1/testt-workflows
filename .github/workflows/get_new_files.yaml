@@ -29,20 +29,22 @@ jobs:
       #     CURRENT_COMMIT_SHA=${{ steps.fetch_curr_commit.outputs.curr_commit }}
       #     CHANGED_FILES=$(git diff --name-only "${PREV_COMMIT_SHA}" "${CURRENT_COMMIT_SHA}")
       #     echo "${CHANGED_FILES}" > changed_files.txt
+      # Make sure you have the 'jq' tool to parse JSON responses
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Fetch commit SHAs from artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: commit-shas
-          path: commit_shas.txt
-
-      # Extract commit SHAs from the artifact file
-      - name: Extract commit SHAs
+      # Call GitHub REST API to get commit SHAs
+      - name: Fetch commit SHAs
+        id: fetch_commit_shas
         run: |
-          PREV_COMMIT_SHA=$(head -n 1 commit_shas.txt)
-          CURRENT_COMMIT_SHA=$(tail -n 1 commit_shas.txt)
-          echo "Previous Commit SHA: $PREV_COMMIT_SHA"
-          echo "Current Commit SHA: $CURRENT_COMMIT_SHA"
+          PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
+            "https://api.github.com/repos/RepoBOwner/RepoBName/actions/workflows/trigger-workflow.yaml/runs?event=push&branch=main&status=completed" \
+            | jq -r '.workflow_runs[0].head_sha')
+          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
+            "https://api.github.com/repos/SyedShamail1/Repo-B/actions/workflows/trigger-workflow.yaml/runs?event=push&branch=main&status=completed" \
+            | jq -r '.workflow_runs[0].head_commit.id')
+          echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" >> $GITHUB_ENV
+          echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" >> $GITHUB_ENV
 
       - name: Show newly added files
         run: |
