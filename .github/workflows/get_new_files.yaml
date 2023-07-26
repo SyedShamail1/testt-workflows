@@ -45,6 +45,8 @@ jobs:
             | jq -r '.workflow_runs[0].head_commit.id')
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" >> $GITHUB_ENV
           echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" >> $GITHUB_ENV
+          echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" 
+          echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" 
 
       - name: Show newly added files
         run: |
