@@ -39,11 +39,10 @@ jobs:
         run: |
           PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
             "https://api.github.com/repos/SyedShamail1/Repo-B/commits?sha=main" \
-            | jq -r '.[0].sha')
-          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
-            # "https://api.github.com/repos/SyedShamail1/Repo-B/actions/workflows/trigger-workflow.yaml/runs?event=push&branch=main&status=completed" \
-            "https://api.github.com/repos/SyedShamail1/Repo-B/commits?sha=main" \
             | jq -r '.[1].sha')
+          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
+            "https://api.github.com/repos/SyedShamail1/Repo-B/commits?sha=main" \
+            | jq -r '.[0].sha')
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" >> $GITHUB_ENV
           echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" >> $GITHUB_ENV
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" 
