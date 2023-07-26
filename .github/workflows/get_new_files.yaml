@@ -9,16 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Fetch previous commit SHA from event payload
+        id: fetch_prev_commit
+        run: echo "::set-output name=prev_commit::${{ github.event.client_payload.before }}"
+
+      - name: Fetch current commit SHA from event payload
+        id: fetch_curr_commit
+        run: echo "::set-output name=curr_commit::${{ github.event.client_payload.after }}"
+
       - name: Checkout source code
         uses: actions/checkout@v2
-
-      - name: Fetch previous commit SHA
-        id: fetch_prev_commit
-        run: echo "::set-output name=prev_commit::$(git rev-parse HEAD^)"
-
-      - name: Fetch current commit SHA
-        id: fetch_curr_commit
-        run: echo "::set-output name=curr_commit::$(git rev-parse HEAD)"
 
       - name: Get changed files
         id: get_changed_files
