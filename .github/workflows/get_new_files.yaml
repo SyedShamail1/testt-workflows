@@ -11,7 +11,9 @@ jobs:
     steps:
       - name: Fetch previous commit SHA from event payload
         id: fetch_prev_commit
-        run: echo "::set-output name=prev_commit::${{ github.event.client_payload.before }}"
+        run: |
+          echo "client payload" ${{ github.event.client_payload }}
+          echo "::set-output name=prev_commit::${{ github.event.client_payload.before }}"
 
       - name: Fetch current commit SHA from event payload
         id: fetch_curr_commit
