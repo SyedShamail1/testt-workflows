@@ -1,0 +1,43 @@
+name: Get Newly Added Downloadable Files
+
+on:
+  repository_dispatch:
+    types: get-new-files
+
+jobs:
+  get-new-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Get newly added files
+        id: get_files
+        run: |
+          # Get the list of changed files between current and previous commits
+          CHANGED_FILES=$(git diff --name-only HEAD^)
+
+          # Filter and keep only newly added files (added but not deleted or renamed)
+          NEW_FILES=$(echo "$CHANGED_FILES" | grep -E '^content/' | grep -v '=>')
+
+          # Output the list of newly added file paths
+          echo "$NEW_FILES" > newly_added_files.txt
+
+      - name: Show newly added files
+        run: |
+          cat newly_added_files.txt
+
+      # (Optional) Construct GitHub downloadable links for the newly added files
+      - name: Construct downloadable links
+        id: construct_links
+        run: |
+          BASE_URL="https://github.com/${GITHUB_REPOSITORY}/raw/${GITHUB_SHA}/"
+
+          while IFS= read -r file; do
+            echo "${BASE_URL}${file}" >> downloadable_links.txt
+          done < newly_added_files.txt
+
+      - name: Show downloadable links
+        run: |
+          cat downloadable_links.txt
