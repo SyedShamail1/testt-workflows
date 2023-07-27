@@ -19,8 +19,8 @@ jobs:
       #   id: fetch_curr_commit
       #   run: echo "::set-output name=curr_commit::${{ github.event.client_payload.after }}"
 
-      # - name: Checkout source code
-      #   uses: actions/checkout@v2
+      - name: Checkout source code
+        uses: actions/checkout@v2
 
       # - name: Get changed files
       #   id: get_changed_files
