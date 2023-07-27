@@ -67,7 +67,7 @@ jobs:
             FILE_NAME_FILTERED="${FILE// /%20}"
 
             # Construct the GitHub API URL to get the raw file link
-            GITHUB_API_URL="https://api.github.com/repos/SyedShamail1/Repo-B//contents/$FILE_NAME_FILTERED"
+            GITHUB_API_URL="https://api.github.com/repos/SyedShamail1/Repo-B/contents/$FILE_NAME_FILTERED"
 
             # Make a GET request to the GitHub API to get the raw file link
             DOWNLOADABLE_LINK=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $GITHUB_API_URL | jq -r '.download_url')
