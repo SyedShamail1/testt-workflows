@@ -8,28 +8,16 @@ jobs:
   get-new-files:
     runs-on: ubuntu-latest
 
-    steps:
-      # - name: Fetch previous commit SHA from event payload
-      #   id: fetch_prev_commit
-      #   run: |
-      #     echo "client payload ${{ github.event.client_payload.before }}"
-      #     echo "::set-output name=prev_commit::${{ github.event.client_payload.before }}"
+    env:
+      trigger_repository: "SyedShamail1/Repo-B"
+      SECRET_REP_A_PAT: ${{ secrets.REPO_A_PAT }}
 
-      # - name: Fetch current commit SHA from event payload
-      #   id: fetch_curr_commit
-      #   run: echo "::set-output name=curr_commit::${{ github.event.client_payload.after }}"
+    steps:
 
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      # - name: Get changed files
-      #   id: get_changed_files
-      #   run: |
-      #     PREV_COMMIT_SHA=${{ steps.fetch_prev_commit.outputs.prev_commit }}
-      #     CURRENT_COMMIT_SHA=${{ steps.fetch_curr_commit.outputs.curr_commit }}
-      #     CHANGED_FILES=$(git diff --name-only "${PREV_COMMIT_SHA}" "${CURRENT_COMMIT_SHA}")
-      #     echo "${CHANGED_FILES}" > changed_files.txt
-      # Make sure you have the 'jq' tool to parse JSON responses
+      # Install jq for json response handling
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
@@ -37,26 +25,27 @@ jobs:
       - name: Fetch commit SHAs
         id: fetch_commit_shas
         run: |
-          PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
-            "https://api.github.com/repos/SyedShamail1/Repo-B/commits?sha=main" \
+          PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer $SECRET_REP_A_PAT" \
+            "https://api.github.com/repos/$trigger_repository/commits?sha=main" \
             | jq -r '.[1].sha')
-          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
-            "https://api.github.com/repos/SyedShamail1/Repo-B/commits?sha=main" \
+          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer $SECRET_REP_A_PAT" \
+            "https://api.github.com/repos/$trigger_repository/commits?sha=main" \
             | jq -r '.[0].sha')
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" >> $GITHUB_ENV
           echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" >> $GITHUB_ENV
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" 
           echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" 
 
+       # Call GitHub REST API to get the latest files added
       - name: Get the list of added files using GitHub API
         id: added_files
         run: |
           PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
-          URL="https://api.github.com/repos/SyedShamail1/Repo-B/compare/${{ env.PREV_COMMIT_SHA }}...${{ env.CURRENT_COMMIT_SHA }}"
+          URL="https://api.github.com/repos/$trigger_repository/compare/${{ env.PREV_COMMIT_SHA }}...${{ env.CURRENT_COMMIT_SHA }}"
           ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
           echo "::set-output name=files::$ADDED_FILES"
 
-      # (Optional) Construct GitHub downloadable links for the newly added files
+      # Construct GitHub downloadable links for the newly added files
       - name: Construct downloadable links
         id: contruct_downloadable_links
         run: |
@@ -67,7 +56,7 @@ jobs:
             FILE_NAME_FILTERED="${FILE// /%20}"
 
             # Construct the GitHub API URL to get the raw file link
-            GITHUB_API_URL="https://api.github.com/repos/SyedShamail1/Repo-B/contents/$FILE_NAME_FILTERED"
+            GITHUB_API_URL="https://api.github.com/repos/$trigger_repository/contents/$FILE_NAME_FILTERED"
 
             # Make a GET request to the GitHub API to get the raw file link
             DOWNLOADABLE_LINK=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $GITHUB_API_URL | jq -r '.download_url')
