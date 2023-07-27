@@ -58,7 +58,7 @@ jobs:
 
       # (Optional) Construct GitHub downloadable links for the newly added files
       - name: Construct downloadable links
-        - name: Check for new file additions
+        id: contruct downloadable links
         run: |
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
           IFS=$'\n' # Set the Internal Field Separator to newline to handle spaces in file names
