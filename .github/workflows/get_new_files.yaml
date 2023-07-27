@@ -26,10 +26,10 @@ jobs:
         id: fetch_commit_shas
         run: |
           PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
-            "https://api.github.com/repos/$TRIGGER_REPO/commits?sha=main" \
+            "https://api.github.com/repos/${{ env.TRIGGER_REPO }}/commits?sha=main" \
             | jq -r '.[1].sha')
           CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
-            "https://api.github.com/repos/$TRIGGER_REPO/commits?sha=main" \
+            "https://api.github.com/repos/${{ env.TRIGGER_REPO }}/commits?sha=main" \
             | jq -r '.[0].sha')
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" >> $GITHUB_ENV
           echo "CURRENT_COMMIT_SHA=${CURRENT_COMMIT_SHA}" >> $GITHUB_ENV
@@ -41,7 +41,7 @@ jobs:
         id: added_files
         run: |
           PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
-          URL="https://api.github.com/repos/$TRIGGER_REPO/compare/${{ env.PREV_COMMIT_SHA }}...${{ env.CURRENT_COMMIT_SHA }}"
+          URL="https://api.github.com/repos/${{ env.TRIGGER_REPO }}/compare/${{ env.PREV_COMMIT_SHA }}...${{ env.CURRENT_COMMIT_SHA }}"
           ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
           echo "::set-output name=files::$ADDED_FILES"
 
@@ -56,7 +56,7 @@ jobs:
             FILE_NAME_FILTERED="${FILE// /%20}"
 
             # Construct the GitHub API URL to get the raw file link
-            GITHUB_API_URL="https://api.github.com/repos/$TRIGGER_REPO/contents/$FILE_NAME_FILTERED"
+            GITHUB_API_URL="https://api.github.com/repos/${{ env.TRIGGER_REPO }}/contents/$FILE_NAME_FILTERED"
 
             # Make a GET request to the GitHub API to get the raw file link
             DOWNLOADABLE_LINK=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $GITHUB_API_URL | jq -r '.download_url')
