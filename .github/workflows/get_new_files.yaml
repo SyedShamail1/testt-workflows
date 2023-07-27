@@ -25,10 +25,10 @@ jobs:
       - name: Fetch commit SHAs
         id: fetch_commit_shas
         run: |
-          PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer $SECRET_REP_A_PAT" \
+          PREV_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
             "https://api.github.com/repos/$TRIGGER_REPO/commits?sha=main" \
             | jq -r '.[1].sha')
-          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer $SECRET_REP_A_PAT" \
+          CURRENT_COMMIT_SHA=$(curl -s -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
             "https://api.github.com/repos/$TRIGGER_REPO/commits?sha=main" \
             | jq -r '.[0].sha')
           echo "PREV_COMMIT_SHA=${PREV_COMMIT_SHA}" >> $GITHUB_ENV
