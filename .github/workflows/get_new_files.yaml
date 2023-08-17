@@ -45,7 +45,7 @@ jobs:
           ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
 
           # Convert the list of added files to an array in JSON format
-          ADDED_FILES_ARRAY="[ $(echo "$ADDED_FILES" | sed 's/.*/"&"/' | paste -sd ',') ]"
+          ADDED_FILES_ARRAY="[$(echo "$ADDED_FILES" | sed 's/.*/"&"/' | paste -sd ',')]"
 
           echo "::set-output name=files::$ADDED_FILES_ARRAY"
 
