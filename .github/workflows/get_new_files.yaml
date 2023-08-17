@@ -66,6 +66,23 @@ jobs:
             echo "New file added: $FILE"
             echo "New file path: $FILE_path"
             # Here you can add more actions or commands you want to perform for each new file added.
+
+      # Invoke an API with the list of newly added file URLs as the request body
+      - name: Invoke API with newly added file URLs
+        run: |
+          ADDED_FILES="${{ steps.added_files.outputs.files }}"
+          API_ENDPOINT="https://example.com/api/endpoint"  # Replace with your actual API endpoint
+
+          # Loop through the added files and construct the request body
+          REQUEST_BODY="{\"files\": ["
+          for FILE in $ADDED_FILES; do
+            FILE_NAME_FILTERED="${FILE// /%20}"
+            GITHUB_API_URL="https://api.github.com/repos/${{ env.TRIGGER_REPO }}/contents/$FILE_NAME_FILTERED"
+            DOWNLOADABLE_LINK=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $GITHUB_API_URL | jq -r '.download_url')
+            REQUEST_BODY="${REQUEST_BODY}\"$DOWNLOADABLE_LINK\","
+          done
+          REQUEST_BODY="${REQUEST_BODY%,}]}"  # Remove the trailing comma and close the array
+          echo "Request Body : $REQUEST_BODY"
           done
 
   
