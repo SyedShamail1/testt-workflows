@@ -43,7 +43,11 @@ jobs:
           PREVIOUS_SHA=$(git rev-parse ${{ github.event.before }})
           URL="https://api.github.com/repos/${{ env.TRIGGER_REPO }}/compare/${{ env.PREV_COMMIT_SHA }}...${{ env.CURRENT_COMMIT_SHA }}"
           ADDED_FILES=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.files[] | select(.status == "added") | .filename')
-          echo "::set-output name=files::$ADDED_FILES"
+
+          # Convert the list of added files to an array in JSON format
+          ADDED_FILES_ARRAY="[\"$(echo "$ADDED_FILES" | sed 's/ /", "/g')\"]"
+
+          echo "::set-output name=files::$ADDED_FILES_ARRAY"
 
       # Construct GitHub downloadable links for the newly added files
       - name: Construct downloadable links
