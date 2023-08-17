@@ -53,10 +53,13 @@ jobs:
       - name: Construct downloadable links
         id: contruct_downloadable_links
         run: |
-          ADDED_FILES="${{ steps.added_files.outputs.files }}"
+          ADDED_FILES=(${{ steps.added_files.outputs.files }})  # Convert the string to an array
+
           IFS=$'\n' # Set the Internal Field Separator to newline to handle spaces in file names
+
           REQUEST_BODY="{\"files\": ["
-          for FILE in $ADDED_FILES; do
+          
+          for FILE in "${ADDED_FILES[@]}"; do  # Iterate through the array
             # Replace spaces with %20 in the file name
             FILE_NAME_FILTERED="${FILE// /%20}"
 
