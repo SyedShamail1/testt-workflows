@@ -84,6 +84,6 @@ jobs:
           done
           REQUEST_BODY="${REQUEST_BODY%,}]}"  # Remove the trailing comma and close the array
           echo "Request Body : $REQUEST_BODY"
-          done
+          
 
   
