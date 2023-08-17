@@ -69,7 +69,7 @@ jobs:
 
       # Invoke an API with the list of newly added file URLs as the request body
       - name: Invoke API with newly added file URLs
-        id: api call
+        id: api_call
         run: |
           ADDED_FILES="${{ steps.added_files.outputs.files }}"
           API_ENDPOINT="https://example.com/api/endpoint"  # Replace with your actual API endpoint
